@@ -6,9 +6,10 @@ import re
 from typing import List
 from DevAPIClient import DevAPIClient
 from UIAutomationHelper import UIAutomationHelper
+import time
 
-
-pyautogui.PAUSE = 2
+# pyautogui.FAILSAFE = False
+pyautogui.PAUSE = 1
 
 
 class Rect:
@@ -119,7 +120,7 @@ class ExecutionAgent:
                 if match:
                     action: ExecutionAgent.Action = command_class(*match.groups(), self)
                     action.execute()
-                    self.command_history.append((command, action))
+                    self.command_history.append(command)
                     print(f"Command '{command}' executed")
         except Exception as e:
             print(e)
@@ -156,7 +157,7 @@ class ExecutionAgent:
             print(f"Element '{item_name}' not found")
 
     def search(self, query, screenshot=""):
-        result = self.api_client.get_command(query, screenshot)
+        result = self.api_client.get_command_gpt_4(query, screenshot)
         return result
 
     def search_and_execute(self, query):
@@ -187,14 +188,13 @@ class ExecutionAgent:
                 for ele in uia_elements
             ]
             element_briefs_json = json.dumps(element_briefs)
-            # limit the json to 1000 characters
-            element_briefs_json = element_briefs_json[:1000]
+            # limit the json to 2000 characters
+            element_briefs_json = element_briefs_json[:2000]
             result = self.search(query, element_briefs_json)
             self.execute_command(result)
             i += 1
-        print(f"Prompt Cost: {self.api_client.prompt_token_count / 1000 * 0.03}")
-        print(
-            f"Completion Cost: {self.api_client.completion_token_count / 1000 * 0.06}"
-        )
+            # wait for 2 seconds
+            time.sleep(2)
+        self.api_client.print_cost()
         print("Done")
         logging.info(f"Message History: {self.api_client.messages}")
