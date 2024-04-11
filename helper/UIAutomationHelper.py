@@ -2,6 +2,9 @@ import ctypes
 from ctypes import wintypes
 from pywinauto import Desktop, Application
 from pywinauto.uia_defines import IUIA
+from datetime import datetime
+import os
+from PIL import Image, ImageDraw, ImageGrab
 
 
 class UIAutomationHelper:
@@ -59,3 +62,25 @@ class UIAutomationHelper:
                 except Exception as ex:
                     print(f"Exception when processing element: {ex}")
         return elements
+
+    @staticmethod
+    def screenshot_window_with_masks(window, elements):
+        # Take a screenshot of the entire window
+        screen = ImageGrab.grab()
+        # Draw masks over detected elements
+        draw = ImageDraw.Draw(screen)
+        for ele in elements:
+            rect = ele.element_info.rectangle
+            draw.rectangle(
+                [rect.left, rect.top, rect.right, rect.bottom],
+                outline="red",
+                width=3,
+            )
+
+        # Ensure the images folder exists
+        images_folder = os.path.join(os.getcwd(), "images")
+        os.makedirs(images_folder, exist_ok=True)
+
+        # Save the image with a timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        screen.save(os.path.join(images_folder, f"{timestamp}.png"))

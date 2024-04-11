@@ -1,0 +1,29 @@
+{
+	"type": "function",
+	"function": {
+		"name": "press",
+		"description": "Press one or multiple keyboard keys, accepting either a single key or a list of keys",
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"keys": {
+					"description": "the key(s) to be pressed",
+					"anyOf": [
+						{
+							"type": "string",
+							"description": "A single key to press"
+						},
+						{
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "A list of keys to press in sequence."
+						}
+					]
+				}
+			},
+			"required": ["keys"]
+		}
+	}
+}

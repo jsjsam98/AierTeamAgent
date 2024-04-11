@@ -1,0 +1,82 @@
+[
+	{
+		"type": "function",
+		"function": {
+			"name": "type",
+			"description": "Type a string",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"text": {
+						"type": "string",
+						"description": "the string to be typed"
+					}
+				},
+				"required": ["text"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "click_item",
+			"description": "Click on an item provided in the context",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"item_name": {
+						"type": "string",
+						"description": "The name of the item to click on."
+					}
+				},
+				"required": ["item_name"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "press",
+			"description": "Press one or multiple keyboard keys, accepting either a single key or a list of keys",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"keys": {
+						"description": "the key(s) to be pressed",
+						"anyOf": [
+							{
+								"type": "string",
+								"description": "A single key to press"
+							},
+							{
+								"type": "array",
+								"items": {
+									"type": "string"
+								},
+								"description": "A list of keys to press in sequence."
+							}
+						]
+					}
+				},
+				"required": ["keys"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "start_app",
+			"description": "Start an application",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "application name"
+					}
+				},
+				"required": ["name"]
+			}
+		}
+	}
+]

@@ -1,0 +1,17 @@
+{
+	"type": "function",
+	"function": {
+		"name": "type",
+		"description": "Type a string",
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"text": {
+					"type": "string",
+					"description": "the string to be typed"
+				}
+			},
+			"required": ["text"]
+		}
+	}
+}

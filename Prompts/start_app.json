@@ -1,0 +1,17 @@
+{
+	"type": "function",
+	"function": {
+		"name": "start_app",
+		"description": "Start an application",
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "application name"
+				}
+			},
+			"required": ["name"]
+		}
+	}
+}
