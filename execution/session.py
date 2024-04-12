@@ -21,7 +21,7 @@ class MainSession:
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
         self.cost = 0
-        self.model = config["MODEL"]
+        self.model = config["AUTO_MODEL"]
         self.is_running = False
         self.max_step = 20
         self.item_details: List[ItemDetail] = []

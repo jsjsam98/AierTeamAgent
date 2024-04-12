@@ -35,7 +35,6 @@ class OCRHelper:
                 # If a match is found, append the data for this entry to the corresponding lists in the filtered dictionary
                 for key in ocr_result.keys():
                     filtered_ocr_result[key].append(ocr_result[key][i])
-
         return filtered_ocr_result
 
     def draw_ocr_result(self, image, ocr_result):
