@@ -7,7 +7,7 @@ config = load_config()
 
 
 class OpenAIAssistant:
-    def __init__(self, thread, available_functions):
+    def __init__(self, available_functions):
         self.client = OpenAI(api_key=config["OPENAI_API_KEY"])
         if "CHAT_ASSISTANT_ID" in config:
             self.assistant = self.client.beta.assistants.retrieve(
@@ -23,7 +23,7 @@ class OpenAIAssistant:
 
             # upload files
             uploaded_file = self.client.files.create(
-                file=open("knowledge/support.txt", "r"),
+                file=open("knowledge/support.txt", "rb"),
                 purpose="assistants",
             )
 
@@ -35,7 +35,7 @@ class OpenAIAssistant:
                 file_ids=[uploaded_file.id],
             )
         self.messages = []
-        self.thread = thread
+        self.thread = self.client.beta.threads.create()
         self.available_functions = available_functions
 
     def wait_on_run(self, run, thread):
@@ -100,3 +100,4 @@ class OpenAIAssistant:
             self.messages.append(
                 {"role": "assistant", "content": "Assistant not available"}
             )
+            return {"role": "assistant", "content": "Assistant not available"}

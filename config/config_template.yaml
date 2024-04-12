@@ -1,6 +1,15 @@
-OPENAI_API_KEY: "<OPENAI_API_KEY>"
+APP_NAME: "AierTeam Agent"
+OPENAI_API_KEY: "<SECRET_API_KEY>"
 CHAT_API_BASE: "https://api.openai.com/v1/chat/completions"
 INSTRUCTION_API_BASE: "https://api.openai.com/v1/instruct/completions"
-CHAT_ASSISTANT_ID: "<CHAT_ASSISTANT_ID>"
-MODEL: "gpt-4-turbo" # or gpt-3.5-turbo
-FILE_IDS: ["<FILE_ID>"]
+CHAT_ASSISTANT_ID: "<SECRET_ASSISTANT_ID>"
+AUTO_MODEL: "gpt-4-turbo" # gpt-4-turbo works best
+ASSISTANT_MODEL: "gpt-3.5-turbo" # gpt-3.5-turbo, gpt-4-turbo
+FILE_IDS: ["<SECRET_FILE_ID>"]
+MODE: "NO" # DEBUG, RELEASE
+
+APPDATA_TASK_FILE: "tasks.json"
+COST_PER_1k_PROMPT_AUTO: 0.01
+COST_PER_1k_COMPLETION_AUTO: 0.03
+COST_PER_1k_PROMPT_CHAT: 0.01
+COST_PER_1k_COMPLETION_CHAT: 0.03

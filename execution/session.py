@@ -26,6 +26,7 @@ class MainSession:
         self.max_step = 20
         self.item_details: List[ItemDetail] = []
         self.tools = []
+        self.task = ""
         self.operation_history = []
         self.available_functions = {
             "click": self.click,
@@ -156,7 +157,12 @@ class MainSession:
         self.total_prompt_tokens += completion.usage.prompt_tokens
         return completion
 
+    def clear_task(self):
+        self.task = ""
+        self.operation_history = []
+
     def run(self, task):
+        self.task = task
         self.operation_history = []
         self.item_details = []
         try:
