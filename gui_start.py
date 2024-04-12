@@ -1,12 +1,5 @@
 from PySide6.QtWidgets import (
     QApplication,
-    QMainWindow,
-    QVBoxLayout,
-    QPushButton,
-    QLineEdit,
-    QWidget,
-    QListWidget,
-    QListWidgetItem,  # Import QListWidgetItem for custom list items
 )
 from PySide6.QtGui import QColor  # Import QColor for setting item colors
 import sys
@@ -17,12 +10,17 @@ from gui.view import MainWindow
 
 
 def main():
+
     app = QApplication(sys.argv)
     model = MainModel()
     window = MainWindow()
     controller = MainController(model, window)
+
+    window.set_controller(controller)
     window.show()
-    sys.exit(app.exec())
+    app.exec()
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":

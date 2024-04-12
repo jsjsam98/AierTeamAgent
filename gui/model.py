@@ -3,6 +3,7 @@ import time
 from config.config import load_config
 from execution.session import MainSession
 from openai import OpenAI
+from db.service import save_data, load_data
 
 config = load_config()
 
@@ -11,6 +12,7 @@ class MainModel:
     def __init__(self):
         self.session = MainSession()
         self.messages = []
+        self.tasks = []
         #### OPENAI ASSISTANT #####
         self.client = OpenAI(api_key=config["OPENAI_API_KEY"])
         self.assistant = self.client.beta.assistants.retrieve(
@@ -20,6 +22,7 @@ class MainModel:
         self.thread = self.client.beta.threads.create()
         self.available_functions = {"run": self.session.run}
         ###########################
+        self.load_tasks()
 
     def wait_on_run(self, run, thread):
         while run.status == "queued" or run.status == "in_progress":
@@ -74,7 +77,16 @@ class MainModel:
                 )
                 response_message = messages.data[0].content[0].text.value
                 self.messages.append({"role": "assistant", "content": response_message})
+                self.tasks.append(
+                    {"task": args_json["task"], "steps": self.session.operation_history}
+                )
         else:
             self.messages.append(
                 {"role": "assistant", "content": "AI is not available"}
             )
+
+    def load_tasks(self):
+        self.tasks = load_data()
+
+    def save_tasks(self):
+        save_data(self.tasks)

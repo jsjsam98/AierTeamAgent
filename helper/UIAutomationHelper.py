@@ -1,7 +1,5 @@
 import ctypes
 from ctypes import wintypes
-from pywinauto import Desktop, Application
-from pywinauto.uia_defines import IUIA
 from datetime import datetime
 import os
 from PIL import Image, ImageDraw, ImageGrab
@@ -9,26 +7,26 @@ from PIL import Image, ImageDraw, ImageGrab
 
 class UIAutomationHelper:
     def __init__(self):
-        # all static method
         pass
 
-    @staticmethod
-    def get_foreground_window():
+    def get_foreground_window(self):
+        from pywinauto import Application
+
         hwnd = ctypes.windll.user32.GetForegroundWindow()
         app = Application(backend="uia").connect(handle=hwnd)
         foreground_window = app.window(handle=hwnd)
         return foreground_window
 
-    @staticmethod
-    def get_windows():
+    def get_windows(self):
+        from pywinauto import Desktop
+
         # Using the UI Automation backend
         desktop = Desktop(backend="uia")
         # Find all top-level windows
         windows = desktop.windows()
         return windows
 
-    @staticmethod
-    def get_element_tree_from_window(window):
+    def get_element_tree_from_window(self, window):
         # Define the desired control types as strings
         desired_types = {
             "Button",
@@ -63,8 +61,7 @@ class UIAutomationHelper:
                     print(f"Exception when processing element: {ex}")
         return elements
 
-    @staticmethod
-    def screenshot_window_with_masks(window, elements):
+    def screenshot_window_with_masks(self, window, elements):
         # Take a screenshot of the entire window
         screen = ImageGrab.grab()
         # Draw masks over detected elements

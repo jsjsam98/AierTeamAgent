@@ -10,88 +10,114 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QLabel,
     QSpacerItem,
+    QHBoxLayout,
+    QTextEdit,
 )
-from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("AierTeam Kernel")
-
         self.resize(800, 600)
 
-        # Layout for the chat messages
-        self.messages_layout = QVBoxLayout()
-        # Initial Spacer
-        self.spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        # Setup for the chat messages area
+        self.setupChatArea()
 
-        # Widget that contains the messages layout
-        self.messages_widget = QWidget()
-        self.messages_widget.setLayout(self.messages_layout)
+        # Setup for the tasks area (similar to chat but without input and send button)
+        self.setupTasksArea()
 
-        # Scroll area for the messages
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setWidget(self.messages_widget)
+        # Splitter for resizable chat and task panels
+        self.main_container = QWidget()
+        self.main_container_layout = QHBoxLayout(self.main_container)
+        self.main_container_layout.addWidget(self.chat_container, 2)
+        self.main_container_layout.addWidget(self.task_container, 1)
 
+        self.setCentralWidget(self.main_container)
+
+    def set_controller(self, controller):
+        from gui.controller import MainController
+
+        self.controller: MainController = controller
+
+    def setupChatArea(self):
+        self.chat_display = QTextEdit()
+        self.chat_display.setReadOnly(True)
         self.user_input = QLineEdit()
         self.send_button = QPushButton("Send")
 
-        # Main layout for the chat (including messages, input, and button)
         self.chat_layout = QVBoxLayout()
-        self.chat_layout.addWidget(self.scroll_area, 1)  # Messages area
+        self.chat_layout.addWidget(self.chat_display, 1)
         self.chat_layout.addWidget(self.user_input)
         self.chat_layout.addWidget(self.send_button)
 
-        # Container for the chat
         self.chat_container = QWidget()
         self.chat_container.setLayout(self.chat_layout)
 
-        # Task list setup
-        self.task_list = QTreeWidget()
-        self.task_list.setHeaderLabels(["Tasks"])
+    def setupTasksArea(self):
+        # Main layout that contains everything
+        self.main_tasks_layout = QVBoxLayout()
 
-        # Splitter for resizable chat and task panels
-        self.splitter = QSplitter()
-        self.splitter.addWidget(self.chat_container)
-        self.splitter.addWidget(self.task_list)
+        # Header layout for buttons
+        self.header_layout = QHBoxLayout()
+        self.add_task_button = QPushButton("Add Task")
+        self.header_layout.addWidget(self.add_task_button)
+        # Optionally, add more buttons to self.header_layout as needed
 
-        self.setCentralWidget(self.splitter)
+        # Add the header layout to the main tasks layout
+        self.main_tasks_layout.addLayout(self.header_layout)
+
+        # Task layout for individual tasks
+        self.task_layout = QVBoxLayout()
+        self.task_spacer = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+        self.task_layout.addItem(self.task_spacer)
+
+        # Add the task layout to the main tasks layout
+        self.main_tasks_layout.addLayout(self.task_layout)
+
+        # The main container for tasks, using the main_tasks_layout
+        self.task_container = QWidget()
+        self.task_container.setLayout(self.main_tasks_layout)
 
     def add_message(self, message):
-        item = QLabel()
-        item.setText(message["content"])
-        item.setWordWrap(True)
-        item.adjustSize()
-        item.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        item.setMinimumHeight(20)
-        # Determine the background color based on the message role
-        if message["role"] == "user":
-            background_color = "lightblue"
-        elif message["role"] == "assistant":
-            background_color = "lightgreen"
-        else:
-            background_color = "white"  # Default color, just in case
-
-        item.setStyleSheet(f"background-color: {background_color}")
-
-        # Remove the spacer, add the message, then re-add the spacer at the end
-        if self.spacer:
-            self.messages_layout.removeItem(self.spacer)
-        self.messages_layout.addWidget(item)
-        self.messages_layout.addItem(self.spacer)
-
-        # Ensure the latest message is visible
-        self.scroll_area.verticalScrollBar().setValue(
-            self.scroll_area.verticalScrollBar().maximum()
-        )
+        self.chat_display.append(f"{message['role']}: {message['content']}")
 
     def set_messages(self, messages):
-        # Clear existing messages
-        while child := self.messages_layout.takeAt(0):
+        self.chat_display.clear()
+        for message in messages:
+            self.add_message(message)
+
+    def add_task(self, task):
+        item = QPushButton()
+        item.setText(task["task"])
+        item.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        item.setMaximumWidth(300)
+        item.setStyleSheet(
+            """
+            QPushButton {
+                text-align: left;
+                border: none;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #CCFFCC;
+            }
+        """
+        )
+
+        item.clicked.connect(lambda: self.controller.handle_task_click(task["task"]))
+        if self.task_spacer:
+            self.task_layout.removeItem(self.task_spacer)
+        self.task_layout.addWidget(item)
+        self.task_layout.addItem(self.task_spacer)
+
+    def set_tasks(self, tasks):
+        while child := self.task_layout.takeAt(0):
             if widget := child.widget():
                 widget.deleteLater()
 
-        for message in messages:
-            self.add_message(message)
+        for task in tasks:
+            self.add_task(task)
