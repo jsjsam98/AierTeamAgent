@@ -6,56 +6,94 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QPushButton,
     QLabel,
+    QHBoxLayout,
+    QWidget,
+    QListWidget,
+    QListWidgetItem,
 )
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QFont
 
 
 class TaskDialog(QDialog):
     def __init__(self, controller, task, parent=None):
         super().__init__(parent)
+        self.setFixedSize(QSize(400, 600))
         self.set_controller(controller)
         self.task = task
         self.setWindowTitle("Edit Task")
 
-        self.layout = QVBoxLayout(self)
+        self.main_layout = QHBoxLayout(self)
+        self.left_layout = QVBoxLayout()
+        self.right_layout = QVBoxLayout()
+        self.main_layout.addLayout(self.left_layout)
+        self.main_layout.addLayout(self.right_layout)
 
         # Task name label and editor
-        self.layout.addWidget(QLabel("Task Name:"))
+        self.left_layout.addWidget(QLabel("Task Name:"))
         self.task_name_edit = QLineEdit(self.task["task"])
-        self.layout.addWidget(self.task_name_edit)
+        self.left_layout.addWidget(self.task_name_edit)
 
         # Task steps label and editor
-        self.layout.addWidget(QLabel("Task Steps (JSON):"))
-        self.task_steps_edit = QTextEdit(json.dumps(self.task["steps"], indent=4))
-        self.layout.addWidget(self.task_steps_edit)
+        self.left_layout.addWidget(QLabel("Task Steps (JSON):"))
+        formatted_json = "<pre>" + json.dumps(self.task["steps"], indent=4) + "</pre>"
+        self.task_steps_edit = QTextEdit(formatted_json)
+        self.left_layout.addWidget(self.task_steps_edit)
 
         # Save button
         self.save_button = QPushButton("Save")
         self.save_button.clicked.connect(self.save_task)
-        self.layout.addWidget(self.save_button)
+        self.left_layout.addWidget(self.save_button)
 
         # Run button
         self.run_button = QPushButton("Run")
         self.run_button.clicked.connect(
             lambda: self.controller.handle_task_run(self.task)
         )
-        self.layout.addWidget(self.run_button)
+        self.left_layout.addWidget(self.run_button)
 
         # Smart Run button
         self.smart_run_button = QPushButton("Smart Run")
         self.smart_run_button.clicked.connect(
             lambda: self.controller.handle_task_run_smart(self.task)
         )
-        self.layout.addWidget(self.smart_run_button)
+        self.left_layout.addWidget(self.smart_run_button)
 
         # Delete button
         self.delete_button = QPushButton("Delete")
         self.delete_button.clicked.connect(self.delete_task)
-        self.layout.addWidget(self.delete_button)
+        self.left_layout.addWidget(self.delete_button)
+
+        # Right layout with options list
+        # self.options_list = QListWidget()
+        # self.options_list.itemDoubleClicked.connect(self.on_item_clicked)
+        # # Add options to the list
+        # for action in ["click_item", "type", "press"]:
+        #     QListWidgetItem(action, self.options_list)
+        # self.right_layout.addWidget(self.options_list)
 
     def set_controller(self, controller):
         from gui.controller import MainController
 
         self.controller: MainController = controller
+
+    def on_item_clicked(self, item):
+        action = item.text()
+        if action == "click_item":
+            self.click_item_clicked(item)
+        elif action == "type":
+            self.type_clicked(item)
+        elif action == "press":
+            self.press_clicked(item)
+
+    def click_item_clicked(self, item):
+        print("click_item action triggered with task:", item.text())
+
+    def type_clicked(self, item):
+        print("type action triggered with task:", item.text())
+
+    def press_clicked(self, item):
+        print("press action triggered with task:", item.text())
 
     def save_task(self):
         self.task["task"] = self.task_name_edit.text()

@@ -7,6 +7,7 @@ import sys
 from gui.controller import MainController
 from gui.model import MainModel
 from gui.view import MainWindow
+from gui.window import ScreenOverlay
 
 
 def main():
@@ -18,6 +19,12 @@ def main():
 
     window.set_controller(controller)
     window.show()
+
+    # screen_geometry = app.primaryScreen().geometry()
+    # overlay = ScreenOverlay()
+    # overlay.setGeometry(screen_geometry)
+    # overlay.show()
+
     app.exec()
 
     sys.exit(0)
