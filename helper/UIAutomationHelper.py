@@ -45,6 +45,8 @@ class UIAutomationHelper:
             "ListItem",
             "Text",
             "Image",
+            "ScrollBar",
+            "Slider",
         }
 
         elements = []

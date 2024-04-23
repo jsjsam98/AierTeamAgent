@@ -1,13 +1,12 @@
 from PySide6.QtWidgets import (
     QApplication,
 )
-from PySide6.QtGui import QColor  # Import QColor for setting item colors
 import sys
-
-from gui.controller import MainController
-from gui.model import MainModel
-from gui.view import MainWindow
+from gui.MainController import MainController
+from gui.MainModel import MainModel
+from gui.MainView import MainWindow
 from gui.window import ScreenOverlay
+from qt_material import apply_stylesheet
 
 
 def main():
@@ -16,15 +15,12 @@ def main():
     model = MainModel()
     window = MainWindow()
     controller = MainController(model, window)
-
     window.set_controller(controller)
+    screen_overlay = ScreenOverlay()
+
+    apply_stylesheet(app, theme="dark_teal.xml")
     window.show()
-
-    # screen_geometry = app.primaryScreen().geometry()
-    # overlay = ScreenOverlay()
-    # overlay.setGeometry(screen_geometry)
-    # overlay.show()
-
+    screen_overlay.show()
     app.exec()
 
     sys.exit(0)

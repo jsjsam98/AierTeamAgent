@@ -162,3 +162,4 @@ cython_debug/
 #others
 config.yaml
 images/
+chromedriver-win64/

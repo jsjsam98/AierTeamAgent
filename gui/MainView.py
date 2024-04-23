@@ -1,3 +1,4 @@
+from typing import List
 from PySide6.QtWidgets import (
     QMainWindow,
     QVBoxLayout,
@@ -9,7 +10,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTextEdit,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtGui import QTextDocument
+from models import Task, Message
 
 
 class MainWindow(QMainWindow):
@@ -33,7 +35,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.main_container)
 
     def set_controller(self, controller):
-        from gui.controller import MainController
+        from gui.MainController import MainController
 
         self.controller: MainController = controller
 
@@ -78,17 +80,17 @@ class MainWindow(QMainWindow):
         self.task_container = QWidget()
         self.task_container.setLayout(self.main_tasks_layout)
 
-    def add_message(self, message):
-        self.chat_display.append(f"{message['role']}: {message['content']}")
+    def add_message(self, message: Message):
+        self.chat_display.append(f"{message.role}: {message.content}")
 
-    def set_messages(self, messages):
+    def set_messages(self, messages: List[Message]):
         self.chat_display.clear()
         for message in messages:
             self.add_message(message)
 
-    def add_task(self, task):
+    def add_task(self, task: Task):
         item = QPushButton()
-        item.setText(task["task"])
+        item.setText(task.task)
         item.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         item.setMaximumWidth(300)
         item.setStyleSheet(
@@ -103,12 +105,12 @@ class MainWindow(QMainWindow):
             }
         """
         )
-
-        item.clicked.connect(lambda: self.controller.handle_task_click(task["task"]))
         if self.task_spacer:
             self.task_layout.removeItem(self.task_spacer)
         self.task_layout.addWidget(item)
         self.task_layout.addItem(self.task_spacer)
+
+        item.clicked.connect(lambda: self.controller.handle_task_click(task.task_id))
 
     def set_tasks(self, tasks):
         while child := self.task_layout.takeAt(0):

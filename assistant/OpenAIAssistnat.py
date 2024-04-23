@@ -47,7 +47,7 @@ class OpenAIAssistant:
             time.sleep(0.5)
         return run
 
-    def add_message(self, text):
+    def query(self, text):
         self.messages.append({"role": "user", "content": text})
         message = self.client.beta.threads.messages.create(
             thread_id=self.thread.id,
@@ -92,9 +92,7 @@ class OpenAIAssistant:
                 )
                 response_message = messages.data[0].content[0].text.value
                 self.messages.append({"role": "assistant", "content": response_message})
-                # self.tasks.append(
-                #     {"task": args_json["task"], "steps": self.session.operation_history}
-                # )
+
                 return {"role": "assistant", "content": response_message}
         else:
             self.messages.append(

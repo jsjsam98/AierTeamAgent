@@ -7,14 +7,17 @@ from config.config import load_config
 from openai import OpenAI
 
 from execution.model import ItemDetail, Rect
+from app_signal import SignalManager
 from helper import OCRHelper, UIAutomationHelper
+from models import Step
 
 
 config = load_config()
 
 
 class MainSession:
-    def __init__(self):
+    def __init__(self, signal_manager: SignalManager):
+        self.signal_manager = signal_manager
         self.client = OpenAI(api_key=config["OPENAI_API_KEY"])
         self.ocr_helper = OCRHelper()
         self.uiautomation_helper = UIAutomationHelper()
@@ -23,7 +26,7 @@ class MainSession:
         self.cost = 0
         self.model = config["AUTO_MODEL"]
         self.is_running = False
-        self.max_step = 20
+        self.max_step = 10
         self.item_details: List[ItemDetail] = []
         self.tools = []
         self.task = ""
@@ -37,6 +40,7 @@ class MainSession:
             "scroll": self.scroll,
             "click_item": self.click_item,
             "start_app": self.start_app,
+            "find_text": self.find_text,
         }
         try:
             with open("./prompts/prompt.txt", "r") as file:
@@ -92,6 +96,23 @@ class MainSession:
             y = element.rect.top + (element.rect.bottom - element.rect.top) / 2
             pyautogui.click(x, y)
             logging.info(f"Clicked on {item_name} at {x}, {y}")
+
+    def find_text(self, text):
+        # capture primary screen
+        from PIL import ImageGrab
+
+        screenshot = ImageGrab.grab()
+        ocr_result = self.ocr_helper.get_ocr_result(screenshot)
+        filtered_result = self.ocr_helper.filter_ocr_result(text, ocr_result)
+        rectangles = []
+        # add to rectangles
+        for i in range(len(filtered_result["text"])):
+            x = filtered_result["left"][i]
+            y = filtered_result["top"][i]
+            w = filtered_result["width"][i]
+            h = filtered_result["height"][i]
+            rectangles.append({"x": x, "y": y, "w": w, "h": h})
+            self.signal_manager.add_rectangle(x, y, w, h)
 
     def start_app(self, name):
         self.press("win")
@@ -178,6 +199,14 @@ class MainSession:
                     args_json = json.loads(args)
                     function_to_call = self.available_functions[name]
                     function_to_call(**args_json)
+                    # break if name and args_json are repeating 3 times in a row
+                    if len(self.operation_history) > 2:
+                        last_three_operations = self.operation_history[-3:]
+                        if all(
+                            op["function"] == name and op["args"] == args_json
+                            for op in last_three_operations
+                        ):
+                            return "repeated"
                     print({"function": name, "args": args_json})
                     self.operation_history.append({"function": name, "args": args_json})
                 elif message.content:
@@ -214,9 +243,9 @@ class MainSession:
             self.total_completion_tokens = 0
             logging.info("Operation finished")
 
-    def run_local(self, steps):
+    def run_local(self, steps: List[Step]):
         for step in steps:
-            function_to_call = self.available_functions[step["function"]]
+            function_to_call = self.available_functions[step.function]
             self.update_item_details()
-            function_to_call(**step["args"])
+            function_to_call(**step.args)
             sleep(1)

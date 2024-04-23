@@ -7,20 +7,19 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLabel,
     QHBoxLayout,
-    QWidget,
-    QListWidget,
-    QListWidgetItem,
 )
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QFont
 
+from models import Task, Step
+
 
 class TaskDialog(QDialog):
-    def __init__(self, controller, task, parent=None):
+    def __init__(self, controller, task: Task, parent=None):
         super().__init__(parent)
+        self.task: Task = task
         self.setFixedSize(QSize(400, 600))
         self.set_controller(controller)
-        self.task = task
         self.setWindowTitle("Edit Task")
 
         self.main_layout = QHBoxLayout(self)
@@ -31,12 +30,13 @@ class TaskDialog(QDialog):
 
         # Task name label and editor
         self.left_layout.addWidget(QLabel("Task Name:"))
-        self.task_name_edit = QLineEdit(self.task["task"])
+        self.task_name_edit = QLineEdit(self.task.task)
         self.left_layout.addWidget(self.task_name_edit)
 
         # Task steps label and editor
         self.left_layout.addWidget(QLabel("Task Steps (JSON):"))
-        formatted_json = "<pre>" + json.dumps(self.task["steps"], indent=4) + "</pre>"
+        steps_list = [step.model_dump() for step in self.task.steps]
+        formatted_json = "<pre>" + json.dumps(steps_list, indent=4) + "</pre>"
         self.task_steps_edit = QTextEdit(formatted_json)
         self.left_layout.addWidget(self.task_steps_edit)
 
@@ -64,16 +64,8 @@ class TaskDialog(QDialog):
         self.delete_button.clicked.connect(self.delete_task)
         self.left_layout.addWidget(self.delete_button)
 
-        # Right layout with options list
-        # self.options_list = QListWidget()
-        # self.options_list.itemDoubleClicked.connect(self.on_item_clicked)
-        # # Add options to the list
-        # for action in ["click_item", "type", "press"]:
-        #     QListWidgetItem(action, self.options_list)
-        # self.right_layout.addWidget(self.options_list)
-
     def set_controller(self, controller):
-        from gui.controller import MainController
+        from gui.MainController import MainController
 
         self.controller: MainController = controller
 
@@ -96,10 +88,17 @@ class TaskDialog(QDialog):
         print("press action triggered with task:", item.text())
 
     def save_task(self):
-        self.task["task"] = self.task_name_edit.text()
+        self.task.task = self.task_name_edit.text()
         try:
             # Attempt to parse the edited JSON back into a list
-            self.task["steps"] = json.loads(self.task_steps_edit.toPlainText())
+            json_text = self.task_steps_edit.toPlainText()
+            parsed_steps = json.loads(json_text)
+
+            # Create a list comprehension to parse each dictionary into a Step object
+            steps_list = [Step.model_validate(step_data) for step_data in parsed_steps]
+
+            # Assign the list of Step objects to self.task.steps
+            self.task.steps = steps_list
         except json.JSONDecodeError as e:
             # Handle JSON parsing errors (e.g., show an error message)
             print("Error parsing JSON:", e)
@@ -108,5 +107,5 @@ class TaskDialog(QDialog):
         self.accept()
 
     def delete_task(self):
-        self.save_task()
-        self.controller.handle_task_delete(self.task)
+        self.controller.handle_task_delete(self.task.task_id)
+        self.accept()
