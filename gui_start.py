@@ -1,3 +1,4 @@
+import logging
 from PySide6.QtWidgets import (
     QApplication,
 )
@@ -7,6 +8,13 @@ from gui.MainModel import MainModel
 from gui.MainView import MainWindow
 from gui.window import ScreenOverlay
 from qt_material import apply_stylesheet
+
+logging.basicConfig(
+    filename="aierteam.log",
+    level=logging.INFO,
+    filemode="w",
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 
 def main():

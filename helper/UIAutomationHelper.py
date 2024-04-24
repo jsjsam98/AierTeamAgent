@@ -1,6 +1,8 @@
 import ctypes
 from ctypes import wintypes
 from datetime import datetime
+from io import StringIO
+import logging
 import os
 from PIL import Image, ImageDraw, ImageGrab
 from collections import deque
@@ -101,6 +103,8 @@ class UIAutomationHelper:
             "Slider",
             "Pane",
         }
+
+        window.print_control_identifiers(depth=25)
 
         elements = []
         for elem in window.descendants():

@@ -48,7 +48,7 @@ class MainController:
         print(f"Deleting task: {task.task}")
         if task:
             print(f"Task {task.task} found.")
-            self.model.tasks.remove(task)
+            self.model.delete_task(task_id)
             self.view.set_tasks(self.model.tasks)
 
     def handle_task_save(self, task: Task):

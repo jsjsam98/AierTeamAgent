@@ -18,7 +18,7 @@
 			{
 				"function": "find_text",
 				"args": {
-					"text": "abc"
+					"text": "Python"
 				}
 			}
 		]
@@ -61,6 +61,72 @@
 				"function": "click_item",
 				"args": {
 					"item_name": "Pause focus session"
+				}
+			}
+		]
+	},
+	{
+		"task_id": "267944cd-2fd8-4a40-968e-ed75bc180818",
+		"task": "Postman",
+		"steps": [
+			{
+				"function": "start_app",
+				"args": {
+					"name": "Postman"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "AierTeam Test"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Cat Facts"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "base-button"
+				}
+			}
+		]
+	},
+	{
+		"task_id": "a1f31a79-de35-4ae4-9dc3-2da902d131ec",
+		"task": "Setup Wireshark filter for TLS traffic containing 'google.com' on Ethernet interface.",
+		"steps": [
+			{
+				"function": "start_app",
+				"args": {
+					"name": "Wireshark"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Ethernet"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Display filter selector"
+				}
+			},
+			{
+				"function": "type",
+				"args": {
+					"text": "tls and frame contains \"google.com\""
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Start"
 				}
 			}
 		]
