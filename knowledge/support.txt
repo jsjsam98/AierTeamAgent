@@ -1,3 +1,4 @@
+Windows Knowledge:
 Find your IP address in Windows:
 For Wi-Fi connection
 Select Start > Settings > Network & internet > Wi-Fi and then select the Wi-Fi network you're connected to.
@@ -9,7 +10,12 @@ Under Properties, look for your IP address listed next to IPv4 address.
 Open Control Panel:
 In the search box on the taskbar, type control panel, and then select Control Panel.
 
-Sam's favorite food: 
-lobster
+
+WireShark Knowledge
+common filters:
+tls.handshake.extensions_server_name contains "<domain_name>"
+
+User preference: 
+food: lobster
 
 

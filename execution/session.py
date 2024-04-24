@@ -248,4 +248,4 @@ class MainSession:
             function_to_call = self.available_functions[step.function]
             self.update_item_details()
             function_to_call(**step.args)
-            sleep(1)
+            sleep(2)
