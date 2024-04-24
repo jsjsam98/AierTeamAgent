@@ -13,7 +13,7 @@ config = load_config()
 
 class MainModel:
     def __init__(self):
-        self.session = injector.get(MainSession)
+        self.session = MainSession()
         self.data_storage = injector.get(DataStorage)
         #### OPENAI ASSISTANT #####
         self.available_functions = {"run": self.session.run}

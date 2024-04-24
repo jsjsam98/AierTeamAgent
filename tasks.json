@@ -1,0 +1,68 @@
+[
+	{
+		"task_id": "8b84be53-8530-47c2-af49-b4a117c7ae63",
+		"task": "open control panel",
+		"steps": [
+			{
+				"function": "start_app",
+				"args": {
+					"name": "Control Panel"
+				}
+			}
+		]
+	},
+	{
+		"task_id": "a5957c5c-ad18-47cd-851a-95c2fcffa4e7",
+		"task": "find text ChatGPT",
+		"steps": [
+			{
+				"function": "find_text",
+				"args": {
+					"text": "abc"
+				}
+			}
+		]
+	},
+	{
+		"task_id": "9a8cf421-af08-4220-93be-fa47f11faf1c",
+		"task": "Start a focus session",
+		"steps": [
+			{
+				"function": "start_app",
+				"args": {
+					"name": "Clock"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Focus sessions"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Duration of focus session in minutes"
+				}
+			},
+			{
+				"function": "type",
+				"args": {
+					"text": "5"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Start focus session"
+				}
+			},
+			{
+				"function": "click_item",
+				"args": {
+					"item_name": "Pause focus session"
+				}
+			}
+		]
+	}
+]

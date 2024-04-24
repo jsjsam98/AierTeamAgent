@@ -83,3 +83,14 @@ class UIAutomationHelper:
         # Save the image with a timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         screen.save(os.path.join(images_folder, f"{timestamp}.png"))
+
+    def select_element_from_point(self, x, y):
+        from pywinauto import Desktop
+
+        desktop = Desktop(backend="uia")
+        try:
+            element = desktop.from_point(x, y)
+            return element
+        except Exception as ex:
+            print(f"No element found at point ({x}, {y}): {ex}")
+            return None

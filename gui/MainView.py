@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.chat_display.setReadOnly(True)
         self.user_input = QLineEdit()
         self.send_button = QPushButton("Send")
+        self.user_input.returnPressed.connect(self.send_button.click)
 
         self.chat_layout = QVBoxLayout()
         self.chat_layout.addWidget(self.chat_display, 1)
