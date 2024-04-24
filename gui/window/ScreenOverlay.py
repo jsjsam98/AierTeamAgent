@@ -4,6 +4,7 @@ from PySide6.QtGui import QPainter, QColor
 from PySide6.QtGui import QMouseEvent, QKeyEvent
 from pynput import mouse, keyboard
 from app_signal.SignalManager import SignalManager
+
 from setup import injector
 
 

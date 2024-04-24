@@ -10,14 +10,14 @@ from execution.model import ItemDetail, Rect
 from app_signal import SignalManager
 from helper import OCRHelper, UIAutomationHelper
 from models import Step
-
+from setup import injector
 
 config = load_config()
 
 
 class MainSession:
-    def __init__(self, signal_manager: SignalManager):
-        self.signal_manager = signal_manager
+    def __init__(self):
+        self.signal_manager = injector.get(SignalManager)
         self.client = OpenAI(api_key=config["OPENAI_API_KEY"])
         self.ocr_helper = OCRHelper()
         self.uiautomation_helper = UIAutomationHelper()
@@ -248,4 +248,4 @@ class MainSession:
             function_to_call = self.available_functions[step.function]
             self.update_item_details()
             function_to_call(**step.args)
-            sleep(1)
+            sleep(2)

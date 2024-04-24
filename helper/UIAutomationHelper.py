@@ -3,6 +3,7 @@ from ctypes import wintypes
 from datetime import datetime
 import os
 from PIL import Image, ImageDraw, ImageGrab
+from collections import deque
 
 
 class UIAutomationHelper:
@@ -26,6 +27,57 @@ class UIAutomationHelper:
         windows = desktop.windows()
         return windows
 
+    def get_elements_bfs(self, root_element):
+        all_elements = []
+        queue = deque([root_element])  # Initialize queue with the root element
+
+        while queue:
+            current_element = queue.popleft()  # Remove and return the leftmost element
+            children = current_element.children()  # Get children of the current element
+
+            if children:
+                queue.extend(children)  # Add children to the right side of the queue
+                all_elements.extend(children)  # Add children to the results list
+
+        return all_elements
+
+    def get_element_tree_from_window_recursive(self, window):
+        # Define the desired control types as strings
+        desired_types = {
+            "Button",
+            "SplitButton",
+            "StatusBar",
+            "Tab",
+            "TabItem",
+            "TreeItem",
+            "RadioButton",
+            "MenuItem",
+            "CheckBox",
+            "ComboBox",
+            "Custom",
+            "DataItem",
+            "Edit",
+            "ListItem",
+            "Text",
+            "Image",
+            "ScrollBar",
+            "Slider",
+        }
+
+        elements = []
+        uia_elements = self.get_elements_bfs(window)
+        for elem in uia_elements:
+            if (
+                elem.element_info.control_type in desired_types
+                and elem.element_info.visible
+            ):
+                try:
+                    if elem.window_text():
+                        elements.append(elem)
+                except Exception as ex:
+                    print(f"Exception when processing element: {ex}")
+        return elements
+
     def get_element_tree_from_window(self, window):
         # Define the desired control types as strings
         desired_types = {
@@ -47,6 +99,7 @@ class UIAutomationHelper:
             "Image",
             "ScrollBar",
             "Slider",
+            "Pane",
         }
 
         elements = []
@@ -83,3 +136,14 @@ class UIAutomationHelper:
         # Save the image with a timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         screen.save(os.path.join(images_folder, f"{timestamp}.png"))
+
+    def select_element_from_point(self, x, y):
+        from pywinauto import Desktop
+
+        desktop = Desktop(backend="uia")
+        try:
+            element = desktop.from_point(x, y)
+            return element
+        except Exception as ex:
+            print(f"No element found at point ({x}, {y}): {ex}")
+            return None
