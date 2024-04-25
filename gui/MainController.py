@@ -18,12 +18,16 @@ class MainController:
     def handle_add_message(self):
         text = self.view.user_input.text()
         if text:
-            # add this line so that the user message is displayed immediately
-            self.view.add_message(Message(role="user", content=text))
-
+            # handle message
             self.model.add_message(text)
             self.view.set_messages(self.model.messages)
             self.view.user_input.clear()
+
+            # handle task
+            most_similar_task, similarity_score = self.model.find_similar_task(text)
+            if similarity_score > 0.1:
+                self.view.set_message_task(most_similar_task)
+
         if self.model.tasks:
             self.view.set_tasks(self.model.tasks)
 

@@ -26,7 +26,7 @@ def main():
     window.set_controller(controller)
     screen_overlay = ScreenOverlay()
 
-    apply_stylesheet(app, theme="dark_teal.xml")
+    apply_stylesheet(app, theme="light_blue.xml")
     window.show()
     screen_overlay.show()
     app.exec()

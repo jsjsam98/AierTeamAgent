@@ -7,6 +7,7 @@ from execution.session import MainSession
 from db import DataStorage
 from models import Task, Message, Step
 from setup import injector
+from helper.NLPHelper import find_most_similar
 
 config = load_config()
 
@@ -22,6 +23,17 @@ class MainModel:
         self.messages: List[Message] = []
         self.tasks: List[Task] = []
         self.load_tasks()
+
+    def find_similar_task(self, text):
+        # find most similar function
+        # convert the list of tasks to a list of strings
+        tasks_str = [task.task for task in self.tasks]
+        most_similar_function, similarity_score = find_most_similar(text, tasks_str)
+        # retrieve the task object based on the function name
+        most_similar_task = next(
+            (task for task in self.tasks if task.task == most_similar_function), None
+        )
+        return most_similar_task, similarity_score
 
     def add_message(self, text):
         user_message = Message(role="user", content=text)
