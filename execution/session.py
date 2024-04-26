@@ -26,7 +26,7 @@ class MainSession:
         self.cost = 0
         self.model = config["AUTO_MODEL"]
         self.is_running = False
-        self.max_step = 10
+        self.max_step = config["MAX_STEP"]
         self.item_details: List[ItemDetail] = []
         self.tools = []
         self.task = ""
