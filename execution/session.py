@@ -121,6 +121,10 @@ class MainSession:
         sleep(1)
         self.press("enter")
         logging.info(f"Started {name}")
+    
+    def start_app_smart(self, name):
+        windows = self.uiautomation_helper.get_windows()
+        
 
     def update_item_details(self):
         window = self.uiautomation_helper.get_foreground_window()
