@@ -3,6 +3,8 @@ from PySide6.QtWidgets import (
     QApplication,
 )
 import sys
+import os
+from config.config import load_config
 from gui.MainController import MainController
 from gui.MainModel import MainModel
 from gui.MainView import MainWindow
@@ -16,8 +18,13 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
+config = load_config()
+
 
 def main():
+
+    # setup openai api key
+    os.environ["OPENAI_API_KEY"] = config["OPENAI_API_KEY"]
 
     app = QApplication(sys.argv)
     model = MainModel()
