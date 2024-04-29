@@ -42,6 +42,7 @@ class MainSession:
             "start_app": self.start_app,
             "find_text": self.find_text,
         }
+        self.previous_window = None
         try:
             with open("./prompts/prompt.txt", "r") as file:
                 self.prompt = file.read()
@@ -115,16 +116,18 @@ class MainSession:
             self.signal_manager.add_rectangle(x, y, w, h)
 
     def start_app(self, name):
-        self.press("win")
-        sleep(1)
-        self.type(name)
-        sleep(1)
-        self.press("enter")
-        logging.info(f"Started {name}")
-    
+        if self.previous_window:
+            self.previous_window.set_focus()
+        else:
+            self.press("win")
+            sleep(1)
+            self.type(name)
+            sleep(1)
+            self.press("enter")
+            logging.info(f"Started {name}")
+
     def start_app_smart(self, name):
         windows = self.uiautomation_helper.get_windows()
-        
 
     def update_item_details(self):
         window = self.uiautomation_helper.get_foreground_window()
@@ -245,6 +248,9 @@ class MainSession:
             self.cost = 0
             self.total_prompt_tokens = 0
             self.total_completion_tokens = 0
+            # save the hwnd of the last window
+            self.previous_window = self.uiautomation_helper.get_foreground_window()
+            print(f"previous window: {self.previous_window.window_text()}")
             logging.info("Operation finished")
 
     def run_local(self, steps: List[Step]):

@@ -35,7 +35,7 @@ def main():
 
     apply_stylesheet(app, theme="light_blue.xml")
     window.show()
-    screen_overlay.show()
+    # screen_overlay.show()
     app.exec()
 
     sys.exit(0)
