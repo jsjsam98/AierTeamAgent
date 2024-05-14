@@ -89,3 +89,11 @@ class MainModel:
 
     def save_tasks(self):
         self.data_storage.set_tasks(self.tasks)
+
+    def run_local(self, task: Task):
+        task_description = task.task   
+        self.assistant.add_message("assistant", f"Running task: {task_description}")
+        self.messages.append(
+            Message(role="assistant", content=f"Running task: {task_description}")
+        )
+        self.session.run_local(task.steps)

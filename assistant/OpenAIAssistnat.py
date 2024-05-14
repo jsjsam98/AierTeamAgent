@@ -7,6 +7,10 @@ config = load_config()
 
 
 class OpenAIAssistant:
+    """
+    Wrapper class for OpenAI Assistant
+    """
+
     def __init__(self, available_functions):
         self.client = OpenAI(api_key=config["OPENAI_API_KEY"])
         if "CHAT_ASSISTANT_ID" in config:
@@ -39,6 +43,9 @@ class OpenAIAssistant:
         self.available_functions = available_functions
 
     def wait_on_run(self, run, thread):
+        """
+        Polls the status of an ongoing run (a request processed by the assistant) until it is completed
+        """
         while run.status == "queued" or run.status == "in_progress":
             run = self.client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
@@ -47,13 +54,24 @@ class OpenAIAssistant:
             time.sleep(0.5)
         return run
 
-    def query(self, text):
-        self.messages.append({"role": "user", "content": text})
+    def add_message(self, role, content):
+        """
+        Adds a message to the local message list and creates the same message in a remote thread.
+        """
+        self.messages.append({"role": role, "content": content})
         message = self.client.beta.threads.messages.create(
             thread_id=self.thread.id,
-            role="user",
-            content=text,
+            role=role,
+            content=content,
         )
+
+    def query(self, text):
+        """
+        
+        """
+        self.add_message("user", text)
+
+        # create and poll the run
         run = self.client.beta.threads.runs.create_and_poll(
             thread_id=self.thread.id,
             assistant_id=self.assistant.id,
