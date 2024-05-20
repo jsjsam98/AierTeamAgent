@@ -104,6 +104,8 @@ class UIAutomationHelper:
             "Pane",
         }
 
+        window.print_control_identifiers(depth=25)
+
         elements = []
         for elem in window.descendants():
             # Use .element_info.control_type to get the control type of the element

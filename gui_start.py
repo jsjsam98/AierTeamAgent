@@ -18,7 +18,9 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
+
 config = load_config()
+
 
 
 def main():
