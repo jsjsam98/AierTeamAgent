@@ -7,7 +7,7 @@ AUTO_MODEL: "gpt-4-turbo" # gpt-4-turbo works best
 ASSISTANT_MODEL: "gpt-3.5-turbo" # gpt-3.5-turbo, gpt-4-turbo
 FILE_IDS: ["<SECRET_FILE_ID>"]
 MODE: "NO" # DEBUG, RELEASE
-
+MAX_STEP: 10
 APPDATA_TASK_FILE: "tasks.json"
 COST_PER_1k_PROMPT_AUTO: 0.01
 COST_PER_1k_COMPLETION_AUTO: 0.03

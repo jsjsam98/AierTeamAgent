@@ -13,7 +13,7 @@ logging.basicConfig(
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: script.py <command>")
+        print("Please provide a command to run.")
         sys.exit(1)
 
     command_to_run = sys.argv[1]  # Get the first command-line argument

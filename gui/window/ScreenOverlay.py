@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QWidget, QApplication
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPainter, QColor
-from PySide6.QtGui import QMouseEvent, QKeyEvent
+from PySide6.QtGui import QPainter, QColor, QGuiApplication
 from pynput import mouse, keyboard
 from app_signal.SignalManager import SignalManager
 
@@ -43,9 +42,24 @@ class ScreenOverlay(QWidget):
         if pressed:
             self.clear_rectangles()
 
-    def add_rectangle(self, x, y, width, height, color=QColor(255, 255, 0, 128)):
+    def add_rectangle_old(self, x, y, width, height, color=QColor(255, 255, 0, 128)):
         """Add a single rectangle to the overlay."""
         self.rectangles.append((x, y, width, height, color))
+        self.update()  # Refresh the widget to show the new rectangle
+
+    def add_rectangle(self, x, y, width, height, color=QColor(255, 255, 0, 128)):
+        """Add a single rectangle to the overlay, adjusted for screen scaling."""
+        screen = QGuiApplication.primaryScreen()  # Get the primary screen
+        scale_factor = screen.devicePixelRatio()  # Get the scaling factor of the screen
+
+        # Adjust coordinates and size based on the scaling factor
+        scaled_x = x / scale_factor
+        scaled_y = y / scale_factor
+        scaled_width = width / scale_factor
+        scaled_height = height / scale_factor
+
+        # Append the scaled rectangle to the list
+        self.rectangles.append((scaled_x, scaled_y, scaled_width, scaled_height, color))
         self.update()  # Refresh the widget to show the new rectangle
 
     def clear_rectangles(self):

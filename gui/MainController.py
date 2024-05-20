@@ -61,7 +61,8 @@ class MainController:
 
     def handle_task_run(self, task: Task):
         print(f"Running task: {task}")
-        self.model.session.run_local(task.steps)
+        self.model.run_local(task)
+        self.view.set_messages(self.model.messages)
         print("Task completed.")
 
     def handle_task_run_smart(self, task: Task):
