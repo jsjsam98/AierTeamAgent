@@ -16,10 +16,18 @@ def main():
         print("Please provide a command to run.")
         sys.exit(1)
 
-    command_to_run = sys.argv[1]  # Get the first command-line argument
-    session = MainSession()
-    session.run(command_to_run)
+    mode = sys.argv[1]
+    task = sys.argv[2]  
 
+    session = MainSession()
+
+    if mode == '-mode text':
+        session.run(task)
+    elif mode == '-mode vision':
+        session.run_vision_mode(task)
+    else:
+        print("Invalid mode. Please use -mode text or -mode vision.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

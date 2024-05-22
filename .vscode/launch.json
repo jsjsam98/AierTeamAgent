@@ -10,7 +10,21 @@
 			"request": "launch",
 			"program": "${file}",
 			"console": "integratedTerminal",
-			"args": ["open the control panel"]
+			"args": ["${input:arg1}", "${input:arg2}"],
 		}
-	]
+	],
+	"inputs": [
+        {
+            "id": "arg1",
+            "type": "promptString",
+            "description": "Enter the mode (-mode text or -mode vision)",
+            "default": "-mode vision"
+        },
+        {
+            "id": "arg2",
+            "type": "promptString",
+            "description": "Enter the task",
+			"default": "open control panel"
+        }
+    ]
 }

@@ -3,6 +3,8 @@ import logging
 from time import sleep
 from typing import Iterable, List
 
+import openai
+import cv2
 from config.config import load_config
 from openai import OpenAI
 
@@ -54,6 +56,14 @@ class MainSession:
                 self.tools = json.load(file)
         except FileNotFoundError:
             logging.error("Tools file not found")
+
+    def capture_screenshot(self):
+        import pyautogui
+
+        screenshot = pyautogui.screenshot()
+        screenshot_path = "screenshot.png"
+        screenshot.save(screenshot_path)
+        return screenshot_path
 
     def click(self, x: int, y: int, button: str = "left"):
         import pyautogui
@@ -189,6 +199,36 @@ class MainSession:
         self.task = ""
         self.operation_history = []
 
+    def send_screenshot_to_openai(self, screenshot_path, prompt):
+        with open(screenshot_path, "rb") as image_file:
+            response = openai.Image.create_edit(
+                image=image_file,
+                mask=image_file,  # Assuming no mask for now
+                prompt=prompt,
+                n=1,
+                size="1024x1024"
+            )
+        return response
+
+    def parse_instructions(self, instructions):
+        # Example: "Click on the item at coordinates (x1, y1), (x2, y2)"
+        coordinates = {
+            'x1': int(instructions.split('(')[1].split(',')[0]),
+            'y1': int(instructions.split(' ')[1].split(')')[0]),
+            'x2': int(instructions.split('(')[2].split(',')[0]),
+            'y2': int(instructions.split(' ')[3].split(')')[0])
+        }
+        return coordinates
+
+    def draw_rectangle(self, screenshot_path, coordinates):
+        image = cv2.imread(screenshot_path)
+        start_point = (coordinates['x1'], coordinates['y1'])
+        end_point = (coordinates['x2'], coordinates['y2'])
+        color = (255, 0, 0) # Blue color in BGR
+        thickness = 2
+        image = cv2.rectangle(image, start_point, end_point, color, thickness)
+        cv2.imwrite("screenshot_with_rectangle.png", image)
+
     def run(self, task):
         self.task = task
         self.operation_history = []
@@ -259,3 +299,16 @@ class MainSession:
             self.update_item_details()
             function_to_call(**step.args)
             sleep(2)
+    
+    def run_vision_mode(self, task):
+        prompt = f"""
+        You are a Windows OS assistant. Analyze the screenshot to understand the current state of the screen and determine the next steps to complete the task: {task}.
+        If you need to click on an item, provide the coordinates and any additional instructions. The task is: {task}.
+        """
+        screenshot_path = self.capture_screenshot()
+        response = self.send_screenshot_to_openai(screenshot_path, prompt)
+        instructions = response['choices'][0]['text']
+        coordinates = self.parse_instructions(instructions)
+        self.draw_rectangle(screenshot_path, coordinates)
+        self.click(coordinates['x1'], coordinates['y1'])
+        print("Assistant:", instructions)
